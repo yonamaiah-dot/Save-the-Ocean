@@ -10,14 +10,14 @@
 #define TELA_LARGURA 960
 #define TELA_ALTURA 640
 
-typedef enum{
+typedef struct EstadoJogo{
     TELA_TITULO = 0,
     JOGANDO,
     TELA_GAME_OVER,
     TELA_VITORIA
 }EstadoJogo;
 
-typedef enum{
+typedef struct TipoEntidade{
    ENT_LIXO,
    ENT_PEIXE,
    ENT_PESSOA
