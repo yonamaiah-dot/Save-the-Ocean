@@ -82,3 +82,7 @@ static void AtualizarEntidades(float dt);
 static void TratarColisoes(void);
 static void RemoverEntidadesMortas(void);
 
+
+void desenhar(){
+    Begin()
+}
