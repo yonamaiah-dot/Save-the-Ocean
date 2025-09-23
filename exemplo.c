@@ -85,9 +85,106 @@ static void RemoverEntidadesMortas(void);
 
 int main(void){
     
+void desenhar(void) {
+    BeginDrawing();
+    ClearBackground((Color){ 20, 100, 155, 255 });
+
+    switch (telaAtual) {
+        case TELA_TITULO: { 
+            
+            //tela do começo
+            const char* titulo = "Save The Ocean";
+            const char* textoBotao = "Começar";
+            Rectangle botaoJogar = { TELA_LARGURA/2 - 100, TELA_ALTURA/2 + 20, 200, 50 };
+            
+            int larguraTitulo = MeasureText(titulo, 40);
+            int larguraBotao = MeasureText(textoBotao, 20);
+
+            DrawText(titulo, TELA_LARGURA/2 - larguraTitulo/2, TELA_ALTURA/2 - 80, 40, RAYWHITE);
+            DrawRectangleRec(botaoJogar, GREEN);
+            DrawText(textoBotao, botaoJogar.x + (botaoJogar.width - larguraBotao)/2, botaoJogar.y + (botaoJogar.height - 20)/2, 20, BLACK);
+
+        } break;
+        case JOGANDO: {
+            
+             // o jogo estando sendo jogado
+            
+            DrawRectangle(0,0, TELA_LARGURA, 48, (Color){10,10,10,120});
+            DrawText(TextFormat("Pontos: %i", pontos), 16, 8, 20, RAYWHITE);
+            DrawText(TextFormat("Fase: %i / 4", indiceFase+1), 220, 8, 20, RAYWHITE);
+            DrawText(fases[indiceFase].nome, 360, 8, 18, RAYWHITE);
+            DrawText(TextFormat("Tempo: %.0f", tempoJogo), 800, 8, 20, RAYWHITE);
+            DrawLineEx((Vector2){0, nivelAgua}, (Vector2){TELA_LARGURA, nivelAgua}, 2, BLUE);
+
+            for (int i = 0; i < qtdEntidades; i++) {
+                Entidade *e = &entidades[i];
+                if (!e->ativo) continue;
+                
+                   //desenha o lixo
+                if (e->tipo == ENT_LIXO) { 
+                    DrawRectanglePro((Rectangle){ e->pos.x, e->pos.y, e->tamanho, e->tamanho }, (Vector2){e->tamanho/2, e->tamanho/2}, 0, (Color){150, 150, 150, 255});
+                    DrawLine(e->pos.x - e->tamanho/3, e->pos.y - e->tamanho/3, e->pos.x + e->tamanho/3, e->pos.y + e->tamanho/3, BLACK);
+                    DrawLine(e->pos.x - e->tamanho/3, e->pos.y + e->tamanho/3, e->pos.x + e->tamanho/3, e->pos.y - e->tamanho/3, BLACK);
+
+                    //desenha o peixe
+                } else if (e->tipo == ENT_PEIXE) {
+                    DrawCircleV(e->pos, e->tamanho/2, (Color){80, 200, 120, 255});
+                    DrawTriangle((Vector2){e->pos.x - e->tamanho/2, e->pos.y}, (Vector2){e->pos.x - e->tamanho/2 - e->tamanho/3, e->pos.y - e->tamanho/4}, (Vector2){e->pos.x - e->tamanho/2 - e->tamanho/3, e->pos.y + e->tamanho/4}, (Color){50,160,90,255});
+                
+                    //desenha as pessoas
+                } else if (e->tipo == ENT_PESSOA) {
+                    DrawCircle(e->pos.x, e->pos.y - e->tamanho*0.25f, e->tamanho*0.22f, (Color){240,200,180,255});
+                    DrawRectangle(e->pos.x - e->tamanho*0.3f, e->pos.y - e->tamanho*0.0f, e->tamanho*0.6f, e->tamanho*0.8f, (Color){120, 80, 160, 255});
+                }
+            }
+            
+            DrawLineEx(posJogador, posAncora, 2, BROWN);
+            DrawRectanglePro((Rectangle){posAncora.x, posAncora.y, tamanhoAncora, tamanhoAncora}, (Vector2){tamanhoAncora/2, tamanhoAncora/2}, 0, (Color){100, 100, 100, 255});
+            DrawTriangle((Vector2){posJogador.x, posJogador.y - tamanhoJogador/2}, (Vector2){posJogador.x - tamanhoJogador, posJogador.y + tamanhoJogador/2}, (Vector2){posJogador.x + tamanhoJogador, posJogador.y + tamanhoJogador/2}, (Color){240, 240, 60, 255});
+       
+        } break;
+        case TELA_GAME_OVER: { 
+
+            //desenha a tela de derrota
+            const char* textoGameOver = "Game Over";
+            const char* textoReiniciar = "Recomeçar";
+            Rectangle botaoReiniciar = { TELA_LARGURA/2 - 100, TELA_ALTURA/2 + 30, 200, 50 };
+            
+            int larguraGameOver = MeasureText(textoGameOver, 40);
+            int larguraReiniciar = MeasureText(textoReiniciar, 20);
+            
+            DrawRectangle(0,0,TELA_LARGURA,TELA_ALTURA,(Color){0,0,0,160});
+            DrawText(textoGameOver, TELA_LARGURA/2 - larguraGameOver/2, TELA_ALTURA/2 - 20, 40, RAYWHITE);
+            DrawRectangleRec(botaoReiniciar, GREEN);
+            DrawText(textoReiniciar, botaoReiniciar.x + (botaoReiniciar.width - larguraReiniciar)/2, botaoReiniciar.y + (botaoReiniciar.height - 20)/2, 20, BLACK);
+        
+        } break;
+        case TELA_VITORIA: {
+
+            //desenha a tela de vitoria
+            const char* textoVitoria = "PARABENS! Voce completou todas as fases!";
+            const char* textoReiniciar = "Recomeçar";
+            Rectangle botaoReiniciar = { TELA_LARGURA/2 - 100, TELA_ALTURA/2 + 30, 200, 50 };
+
+            int larguraVitoria = MeasureText(textoVitoria, 30);
+            int larguraReiniciar = MeasureText(textoReiniciar, 20);
+
+            DrawRectangle(0,0,TELA_LARGURA,TELA_ALTURA,(Color){0,0,0,120});
+            DrawText(textoVitoria, TELA_LARGURA/2 - larguraVitoria/2, TELA_ALTURA/2 - 20, 30, RAYWHITE);
+            DrawRectangleRec(botaoReiniciar, GREEN);
+            DrawText(textoReiniciar, botaoReiniciar.x + (botaoReiniciar.width - larguraReiniciar)/2, botaoReiniciar.y + (botaoReiniciar.height - 20)/2, 20, BLACK);
+        } break;
+    }
+
+    EndDrawing();
+}
+
 static void TratarColisoes(void) {
+
+    // Trata as colisoes das ancoras e as colisoes das entidades
     Rectangle ancoraRec = { posAncora.x - tamanhoAncora/2, posAncora.y -
 tamanhoAncora/2, tamanhoAncora, tamanhoAncora };
+   
     for (int i = 0; i < qtdEntidades; i++) {
         if (!entidades[i].ativo) continue;
         if (CheckCollisionCircleRec(entidades[i].pos, entidades[i].tamanho/2, ancoraRec)) {
@@ -96,19 +193,26 @@ tamanhoAncora/2, tamanhoAncora, tamanhoAncora };
             } else if (entidades[i].tipo == ENT_PEIXE || entidades[i].tipo == ENT_PESSOA) {
                 pontos -= 15;
             }
+
             entidades[i].ativo = false;
             subindoAncora = true;
             descendoAncora = false;
         }
     }   
 }
-static void CriarEntidade(ConfigFase config) {
+
+
+static void CriarEntidade(ConfigFase config) { 
+
+    // cria as entidades
     if (qtdEntidades >= MAX_ENTIDADES) return;
     Entidade e = {0};
     float r = aleatorioFloat(0.0f, 1.0f);
+
     if (r < config.probabilidadeLixo) e.tipo = ENT_LIXO;
-    else if (r < config.probabilidadeLixo + (1.0f - config.probabilidadeLixo) * 0.714f) e.tipo = ENT_PEIXE;
-    else e.tipo = ENT_PESSOA;
+        else if (r < config.probabilidadeLixo + (1.0f - config.probabilidadeLixo) * 0.714f) e.tipo = ENT_PEIXE;
+        else e.tipo = ENT_PESSOA;
+
     e.pos.x = aleatorioFloat(40, TELA_LARGURA - 40);
     e.pos.y = aleatorioFloat(nivelAgua + 20, TELA_ALTURA - 40);
     e.tamanho = (e.tipo == ENT_LIXO) ? aleatorioFloat(14, 28) : aleatorioFloat(22, 40);
