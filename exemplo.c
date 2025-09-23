@@ -97,54 +97,6 @@ int main(void) {
     }
 
     CloseWindow();
-    void atualizar(float delta) {
-    switch (telaAtual) {
-        case TELA_TITULO: {
-            Rectangle botaoJogar = { TELA_LARGURA/2 - 100, TELA_ALTURA/2 + 20, 200, 50 };
-
-            if ((IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
-                CheckCollisionPointRec(GetMousePosition(), botaoJogar)) ||
-                IsKeyPressed(KEY_ENTER)) {
-                telaAtual = JOGANDO;
-                ReiniciarJogo();
-            }
-        } break;
-
-        case JOGANDO: {
-            tempoJogo -= delta;
-            if (tempoJogo <= 0) {
-                tempoJogo = 0;
-                telaAtual = TELA_GAME_OVER;
-            }
-
-            if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
-                posJogador.x += velocidadeJogador * delta;
-            if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
-                posJogador.x -= velocidadeJogador * delta;
-
-            posJogador.x = Clamp(posJogador.x, tamanhoJogador, TELA_LARGURA - tamanhoJogador);
-            posAncora.x = posJogador.x;
-
-            if (IsKeyPressed(KEY_SPACE)) {
-                if (tempoToqueDuplo > 0) {
-                    subindoAncora = true;
-                    descendoAncora = false;
-                    tempoToqueDuplo = 0.0f;
-                } else {
-                    descendoAncora = true;
-                    subindoAncora = false;
-                    tempoToqueDuplo = TEMPO_TOQUE_DUPLO;
-                }
-            }
-
-            if (tempoToqueDuplo > 0) {
-                tempoToqueDuplo -= delta;
-                if (tempoToqueDuplo <= 0) {
-                    tempoToqueDuplo = 0.0f;
-                }
-            }
-        } break;
-    }
 }
 
 }
