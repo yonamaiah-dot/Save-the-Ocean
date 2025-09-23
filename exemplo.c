@@ -1,10 +1,10 @@
-#include <sdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
-#include "include/raylib.h"
-#include "include/raymath.h"
+#include "raylib/raylib.h"
+#include "raylib/raymath.h"
 
 #define TELA_LARGURA 960
 #define TELA_ALTURA 640
@@ -22,25 +22,25 @@ typedef enum{
 
 }EstadoJogo;
 
-typedef enum{
+typedef enum TipoEntidade{
 
-    ENT_LIXO;
-    ENT_PEIXE;
+    ENT_LIXO,
+    ENT_PEIXE,
     ENT_PESSOA
 
 }TipoEntidade;
 
-typedef struct{
+typedef struct Entidade{
 
     TipoEntidade tipo;
     Vector2 pos;
     Vector2 vel;
     float tamanho;
-    bool aivo;
+    bool ativo;
 
 }Entidade;
 
-typedef struct{
+typedef struct ConfigFase{
 float intervaloSpawn;
     float velocidadeEntidade;
     float probabilidadeLixo;
@@ -83,7 +83,21 @@ static void AtualizarEntidades(float dt);
 static void TratarColisoes(void);
 static void RemoverEntidadesMortas(void);
 
-int main(void){
+int main(void) {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
+    InitWindow(TELA_LARGURA, TELA_ALTURA, "Save The Ocean");
+    SetTargetFPS(60);
+    srand(time(NULL));
+
+    telaAtual = TELA_TITULO;
+
+    while (!WindowShouldClose()) {
+        atualizar(GetFrameTime());
+        desenhar();
+    }
+
+    CloseWindow();
+}
     
 void desenhar(void) {
     BeginDrawing();
@@ -179,6 +193,27 @@ void desenhar(void) {
     EndDrawing();
 }
 
+static void ReiniciarJogo(void) {
+    qtdEntidades = 0;
+    tempoSpawn = 0;
+    tempoJogo = 60.0f;
+    pontos = 0;
+    indiceFase = 0;
+    posJogador.x = TELA_LARGURA/2;
+    posJogador.y = nivelBarco;
+    posAncora.x = posJogador.x;
+    posAncora.y = posJogador.y;
+    velocidadeJogador = 180.0f;
+    velocidadeAncora = 220.0f;
+    descendoAncora = false;
+    subindoAncora = false;
+    tempoToqueDuplo = 0.0f;
+}
+
+static float aleatorioFloat(float a, float b) {
+    return a + (float)rand() / RAND_MAX * (b - a);
+}
+
 static void TratarColisoes(void) {
 
     // Trata as colisoes das ancoras e as colisoes das entidades
@@ -238,6 +273,7 @@ static void AtualizarEntidades(float dt) {
         }
     }
 }
+
 static void RemoverEntidadesMortas(void) {
     int gravar = 0;
     for (int i = 0; i < qtdEntidades; i++) {
@@ -249,4 +285,4 @@ static void RemoverEntidadesMortas(void) {
     qtdEntidades = gravar;
 }
 
-}
+
