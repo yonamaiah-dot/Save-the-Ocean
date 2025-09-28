@@ -99,7 +99,7 @@ int main(void) {
     CloseWindow();
 }
 
-}
+
     
 void desenhar(void) {
     BeginDrawing();
@@ -258,6 +258,9 @@ static void CriarEntidade(ConfigFase config) {
     e.ativo = true;
     entidades[qtdEntidades++] = e;
 }
+
+//pare responsavel por atualizar as entidades
+
 static void AtualizarEntidades(float dt) {
     for (int i = 0; i < qtdEntidades; i++) {
         if (!entidades[i].ativo) continue;
