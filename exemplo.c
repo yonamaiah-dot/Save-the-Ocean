@@ -449,5 +449,163 @@ static void RemoverEntidadesMortas(void) {
     }
     qtdEntidades = gravar;
 }
-
+void atualizar(float delta) {
+switch (telaAtual) {
+case TELA
+_
+TITULO: {
+Rectangle botaoJogar = { TELA
+LARGURA/2 - 100, TELA
+ALTURA/2 + 20, 200, 50
+_
+_
+};
+if ((IsMouseButtonPressed(MOUSE
+BUTTON
+_
+_
+LEFT) &&
+CheckCollisionPointRec(GetMousePosition(), botaoJogar)) || IsKeyPressed(KEY
+_
+telaAtual = JOGANDO;
+ReiniciarJogo();
+}
+} break;
+case JOGANDO: {
+tempoJogo -= delta;
+if (tempoJogo <= 0) {
+tempoJogo = 0;
+telaAtual = TELA
+GAME
+OVER;
+_
+_
+}
+if (IsKeyDown(KEY
+_
+RIGHT) || IsKeyDown(KEY
+_
+D)) posJogador.x +=
+velocidadeJogador * delta;
+if (IsKeyDown(KEY
+_
+LEFT) || IsKeyDown(KEY
+_
+A)) posJogador.x -=
+velocidadeJogador * delta;
+posJogador.x = Clamp(posJogador.x, tamanhoJogador, TELA
+_
+tamanhoJogador);
+posAncora.x = posJogador.x;
+if (IsKeyPressed(KEY
+_
+SPACE)) {
+if (tempoToqueDuplo > 0) {
+subindoAncora = true;
+descendoAncora = false;
+tempoToqueDuplo = 0.0f;
+} else {
+descendoAncora = true;
+subindoAncora = false;
+tempoToqueDuplo = TEMPO
+TOQUE
+DUPLO;
+_
+_
+LARGURA -
+ENTER)) {
+}
+}
+if (tempoToqueDuplo > 0) {
+tempoToqueDuplo -= delta;
+if (tempoToqueDuplo <= 0) {
+tempoToqueDuplo = 0.0f;
+}
+}
+if (descendoAncora) {
+posAncora.y += velocidadeAncora * delta;
+if (posAncora.y >= TELA
+_
+ALTURA - tamanhoAncora/2) {
+posAncora.y = TELA
+ALTURA - tamanhoAncora/2;
+_
+descendoAncora = false;
+}
+} else if (subindoAncora) {
+posAncora.y -= velocidadeAncora * delta;
+if (posAncora.y <= nivelBarco) {
+posAncora.y = nivelBarco;
+subindoAncora = false;
+}
+}
+tempoSpawn += delta;
+ConfigFase cfg = fases[indiceFase];
+if (tempoSpawn >= cfg.intervaloSpawn) {
+tempoSpawn = 0;
+int qtdSpawn = 1 + (indiceFase / 1);
+for (int i = 0; i < qtdSpawn; i++) CriarEntidade(cfg);
+}
+AtualizarEntidades(delta);
+TratarColisoes();
+RemoverEntidadesMortas();
+if (pontos >= 100) {
+indiceFase++;
+if (indiceFase >= 4) {
+telaAtual = TELA
+VITORIA;
+_
+} else {
+pontos = 0;
+qtdEntidades = 0;
+tempoSpawn = 0;
+velocidadeJogador += 25;
+tempoJogo = 60.0f;
+}
+}
+} break;
+case TELA
+GAME
+_
+_
+OVER: {
+Rectangle botaoReiniciar = { TELA
+LARGURA/2 - 100, TELA
+ALTURA/2 + 30, 200,
+_
+_
+50 };
+if (IsMouseButtonPressed(MOUSE
+BUTTON
+_
+_
+LEFT) &&
+CheckCollisionPointRec(GetMousePosition(), botaoReiniciar)) {
+telaAtual = TELA
+TITULO;
+_
+}
+} break;
+case TELA
+_
+VITORIA: {
+Rectangle botaoReiniciar = { TELA
+LARGURA/2 - 100, TELA
+ALTURA/2 + 30, 200,
+_
+_
+50 };
+if (IsMouseButtonPressed(MOUSE
+BUTTON
+_
+_
+LEFT) &&
+CheckCollisionPointRec(GetMousePosition(), botaoReiniciar)) {
+telaAtual = TELA
+TITULO;
+_
+}
+} break;
+}
+}
 
