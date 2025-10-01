@@ -414,7 +414,7 @@ void desenhar(void) {
                                    (Vector2){ e->tamanho/2, e->tamanho/2 },
                                    0.0f, 
                                    WHITE);
-                                   
+                                   8
                 } else if (e->tipo == ENT_PEIXE) {
                     
                     Texture2D texPeixeBaseDir = texPeixeLaranjaDir;
